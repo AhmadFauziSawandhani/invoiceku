@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use App\User;
 
 class Customer extends Model
 {
@@ -14,6 +15,7 @@ class Customer extends Model
     protected $fillable = [
         'name',
         'phone',
+        'address',
     ];
 
     public function invoices()
@@ -29,5 +31,10 @@ class Customer extends Model
     public function orderItems()
     {
         return $this->hasManyThrough(OrderItem::class, Order::class);
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class, 'ref_id')->where('ref_type', 'customers');
     }
 }

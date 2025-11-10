@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Model\Product;
-use App\MOdel\ProductPrice;
+use App\Model\ProductPrice;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 

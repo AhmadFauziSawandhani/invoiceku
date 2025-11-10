@@ -38,7 +38,7 @@ class InvoiceController extends Controller
                 'invoices.status',
                 'customers.name as customer_name'
             )
-            ->orderBy('invoices.id', 'asc');
+            ->orderBy('invoices.id', 'desc');
 
         return DataTables::of($data)
             ->editColumn('invoice_date', function ($row) {

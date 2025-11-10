@@ -77,21 +77,28 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @if($invoices_today->count() > 0)
+                    @if($items_summary_today->count() > 0)
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th>Produk</th>
-                                    <th>Quantity</th>
+                                    <th>Total Quantity</th>
+                                    <th>Customer Quantity</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($invoices_today as $index => $item)
+                                @foreach($items_summary_today as $index => $item)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
-                                        <td>{{ $item->product->name ?? '-' }}</td>
-                                        <td>{{ $item->total_qty }} {{ $item->product->unit ?? '' }}</td>
+                                        <td>{{ $item['product']->name ?? '-' }}</td>
+                                        <td>{{ $item['total_qty'] }} {{ $item['product']->unit ?? '' }}</td>
+                                        <td>
+                                            @foreach($item['customers'] as $cust)
+                                                <strong>{{ $cust['customer_name'] }}</strong>: 
+                                                {{ $cust['quantity'] }} {{ $cust['unit'] }}<br>
+                                            @endforeach
+                                        </td>
                                     </tr>
                                 @endforeach
                             </tbody>

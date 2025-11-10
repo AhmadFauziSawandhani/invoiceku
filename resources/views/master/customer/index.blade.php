@@ -37,7 +37,9 @@
                                         <tr>
                                             {{-- <th>No</th> --}}
                                             <th>Nama Customer</th>
+                                            <th>Email</th>
                                             <th>Nomor Telepon</th>
+                                            <th>Alamat</th>
                                             <th style="width: 10%;">#</th>
                                         </tr>
                                     </thead>
@@ -81,6 +83,10 @@
                             <label>Phone Number</label>
                             <input type="number" class="form-control" name="phone" placeholder="Phone Number" required>
                         </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <textarea class="form-control" name="address" placeholder="Address" rows="3" required></textarea>
+                        </div>
                     </div>
                     <div class="modal-footer justify-content-between">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -109,12 +115,16 @@
                         </div>
                         <div class="form-group">
                             <label>Email</label>
-                            <input type="email" class="form-control" name="email" placeholder="Email" required>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
                         </div>
                         <div class="form-group">
                             <label for="exampleInputPassword1">Phone Number</label>
                             <input id="phone" type="text" class="form-control" name="phone" placeholder="Telepon"
                                 oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*?)\..*/g, '$1');">
+                        </div>
+                        <div class="form-group">
+                            <label>Address</label>
+                            <textarea class="form-control" id="address" name="address" placeholder="Address" rows="3" required></textarea>
                         </div>
                     </div>
                     <div class="modal-footer justify-content-between">
@@ -153,12 +163,26 @@
                         data: 'name'
                     },
                     {
+                        data: 'email'
+                    },
+                    {
                         data: 'phone'
+                    },
+                    {
+                        data: 'address'
                     },
                     {
                         data: 'id',
                         render: function(data, type, row, meta) {
-                            return `<button class="btn btn-primary btn-approve-item btn-sm btn-edit" data-id="${data}" data-name="${row.name}" data-phone="${row.phone}"><i class="fa fa-edit"></i></button>`
+                            return `
+                            <button class="btn btn-primary btn-sm btn-edit"
+                                data-id="${data}"
+                                data-name="${row.name}"
+                                data-email="${row.email}"
+                                data-phone="${row.phone}"
+                                data-address="${row.address}">
+                                <i class="fa fa-edit"></i>
+                            </button>`
                         }
                     },
 
@@ -170,21 +194,23 @@
             table.ajax.reload();
         }
 
-        $('body').delegate('.btn-edit', 'click', function() {
+        $('body').on('click', '.btn-edit', function() {
             let id = $(this).data('id');
             let name = $(this).data('name');
             let email = $(this).data('email');
             let phone = $(this).data('phone');
+            let address = $(this).data('address');
             
             $('#modal-edit-customer').modal('show');
             $('#name').val(name);
             $('#email').val(email);
             $('#phone').val(phone);
+            $('#address').val(address);
 
-            var url = "{{ route('master.customers.update', ':id') }}";
-            url = url.replace(':id', id);
-            $("#form-edit-customer").submit(function(e) {
+            $('#form-edit-customer').off('submit').on('submit', function(e) {
                 e.preventDefault();
+
+                let url = "{{ route('master.customers.update', ':id') }}".replace(':id', id);
 
                 $.ajax({
                     type: "PUT",
@@ -195,14 +221,13 @@
                             $('#modal-edit-customer form')[0].reset();
                             $('#modal-edit-customer').modal('hide');
                             showSuccess(response.msg);
-                            refreshTable();
+                            setTimeout(() => location.reload(), 1000);
                         } else {
                             showError(response.msg);
                         }
                     },
-                    error: function(xhr, status, error) {
-                        var err = eval("(" + xhr.responseText + ")");
-                        showError(err.message);
+                    error: function(xhr) {
+                        showError(xhr.responseJSON?.message || 'Terjadi kesalahan saat mengupdate data');
                     }
                 });
             })
